@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SYS//MIND</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#070b14">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--a:#22d3ee;--bg:#070b14;--sf:#0e1522;--bd:#1c2a40;--tx:#e6edf7;--mu:#7f8da6;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}html,body{height:100%;margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 ui-monospace,SFMono-Regular,Menlo,"Segoe UI",sans-serif}
+body{background-image:linear-gradient(var(--bd) 1px,transparent 1px),linear-gradient(90deg,var(--bd) 1px,transparent 1px);background-size:34px 34px;background-position:-1px -1px;background-attachment:fixed}
+#app{max-width:780px;margin:auto;height:100%;display:flex;flex-direction:column;background:#070b14e6}
+header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--a);box-shadow:0 1px 14px -6px var(--a)}
+header b{color:var(--a);letter-spacing:2px}header small{color:var(--mu);font-size:11px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 8px #22c55e;margin-right:5px}.dot.off{background:#ef4444;box-shadow:0 0 8px #ef4444}
+main{flex:1;overflow-y:auto;padding:12px 12px 90px}
+nav{position:fixed;bottom:0;left:0;right:0;max-width:780px;margin:auto;display:flex;background:var(--sf);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;border:0;background:none;color:var(--mu);padding:10px 2px;font:inherit;font-size:11px;border-top:2px solid transparent}
+nav button.on{color:var(--c);border-top-color:var(--c)}nav button span{display:block;font-size:19px}
+button,input,select,textarea{font:inherit;color:var(--tx)}
+button.b{background:var(--sf);border:1px solid var(--a);color:var(--a);border-radius:8px;padding:8px 12px;cursor:pointer}
+button.b.f{background:var(--a);color:#001018;font-weight:700}button:disabled{opacity:.45}
+input,select,textarea{width:100%;background:#0a101b;border:1px solid var(--bd);border-radius:8px;padding:9px;margin:4px 0}
+input:focus,textarea:focus{outline:1px solid var(--a)}textarea{resize:vertical;min-height:70px}
+.card{background:var(--sf);border:1px solid var(--bd);border-left:3px solid var(--a);border-radius:10px;padding:12px;margin:10px 0}
+.row{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.row>*{flex:1}.mu{color:var(--mu);font-size:12px}.hid{display:none}
+.chips button{flex:none;border:1px solid var(--bd);background:none;border-radius:20px;padding:5px 12px;color:var(--mu)}.chips button.on{border-color:var(--a);color:var(--a)}
+.msg{padding:9px 12px;border-radius:10px;margin:8px 0;overflow-wrap:anywhere}.u{background:#16243a;margin-left:12%;border:1px solid var(--bd)}.ai{background:var(--sf);border:1px solid var(--bd);border-left:3px solid var(--a);margin-right:6%}
+.cb{position:relative}.cb pre{background:#02050a;border:1px solid var(--bd);padding:10px;border-radius:8px;overflow-x:auto;font-size:12.5px}.cp{position:absolute;right:6px;top:6px;font-size:11px;background:var(--sf);border:1px solid var(--bd);color:var(--mu);border-radius:6px}
+code{background:#16243a;padding:0 4px;border-radius:4px}pre code{background:none;padding:0}
+.bar{height:6px;background:var(--bd);border-radius:4px;overflow:hidden}.bar i{display:block;height:100%;background:var(--a)}
+.ls{display:flex;gap:8px;align-items:center;padding:7px 4px;border-top:1px solid var(--bd);cursor:pointer}.ls.d{color:var(--mu)}
+.fc{min-height:150px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:18px;padding:16px}
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat div{text-align:center;background:#0a101b;border:1px solid var(--bd);border-radius:8px;padding:10px}.stat b{display:block;font-size:22px;color:var(--a)}
+h3,h4,h2{margin:10px 0 4px;color:var(--a)}
+</style></head><body><div id="app">
+<header><b>SYS//MIND</b><small><span class="dot" id="dot"></span><span id="st">booting…</span></small></header>
+<main>
+<section id="p-chat">
+ <div class="row chips" id="pers"></div>
+ <div id="log"></div>
+ <div class="card"><textarea id="inp" placeholder="Talk to your AI: ask, discuss, code, create…"></textarea>
+ <div class="row"><button class="b f" id="send">Send ▶</button><button class="b" id="mic" style="flex:0 0 48px">🎤</button><button class="b" id="spk" style="flex:0 0 48px">🔇</button><button class="b" id="clr" style="flex:0 0 48px">🗑</button></div></div>
+</section>
+<section id="p-course" class="hid">
+ <div class="card"><b>Course builder</b><input id="ct" placeholder="What course do you want? e.g. Web development"><select id="cl"><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select><button class="b f" id="cb">Build course</button></div>
+ <div id="cl-list"></div><div class="card hid" id="lcard"><div id="lout"></div><div class="row" id="lact"><button class="b f" id="ldone">Mark done</button><button class="b" id="lcards">Make flashcards</button><button class="b" id="ldisc">Discuss</button></div></div>
+</section>
+<section id="p-cards" class="hid">
+ <div class="card"><b>Flashcards · spaced repetition</b><div id="decks" class="mu"></div><div class="row"><button class="b f" id="rvAll">Review due cards</button></div></div>
+ <div class="card hid" id="rv"><div class="mu" id="rvn"></div><div class="fc" id="rvf"></div><div class="row" id="rvb"></div></div>
+ <div class="card"><b>Generate with AI</b><input id="gd" placeholder="Deck name"><textarea id="gt" placeholder="Topic or paste notes…"></textarea><div class="row"><button class="b" id="gen">Generate 8 cards</button></div>
+ <b>Add manually</b><input id="mf" placeholder="Front"><input id="mb" placeholder="Back"><button class="b" id="madd">Add card</button></div>
+</section>
+<section id="p-stats" class="hid">
+ <div class="card"><div class="stat"><div><b id="s1">0</b>level</div><div><b id="s2">0</b>day streak</div><div><b id="s3">0</b>XP</div><div><b id="s4">0</b>cards due</div><div><b id="s5">0</b>cards</div><div><b id="s6">0</b>lessons</div></div></div>
+ <div class="card"><b>Settings</b><div class="mu" id="mode"></div>
+ <input id="key" type="password" placeholder="Anthropic API key (needed on GitHub)" autocomplete="off"><input id="mod" placeholder="Model"><div class="row"><button class="b f" id="ks">Save</button><button class="b" id="pal">Change colours</button><button class="b" id="wipe">Erase data</button></div>
+ <div class="mu">Your key stays on this device only. Use a key with a spending limit.</div></div>
+</section>
+</main>
+<nav id="nav"></nav></div>
+<script>
+const $=id=>document.getElementById(id),esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const PAL=[['#22d3ee','#a78bfa','#4ade80','#fbbf24'],['#f472b6','#fb923c','#38bdf8','#a3e635'],['#f87171','#facc15','#34d399','#818cf8'],['#e5e7eb','#9ca3af','#d1d5db','#f3f4f6']];
+let D={xp:0,day:'',streak:0,chat:[],courses:[],cards:[],pal:0,key:'',model:'claude-sonnet-5-5',voice:0,persona:0};
+try{Object.assign(D,JSON.parse(localStorage.getItem('sysmind')||'{}'))}catch(e){}
+const save=()=>{try{localStorage.setItem('sysmind',JSON.stringify(D))}catch(e){}};
+function xp(n){D.xp+=n;const d=new Date().toDateString();if(D.day!=d){D.streak=D.day==new Date(Date.now()-864e5).toDateString()?D.streak+1:1;D.day=d}save()}
+function md(t){let h='';t.split('```').forEach((p,i)=>{h+=i%2?'<div class="cb"><button class="cp">copy</button><pre><code>'+esc(p.slice(p.indexOf('\n')+1))+'</code></pre></div>':esc(p).replace(/^### (.*)$/gm,'<h4>$1</h4>').replace(/^## (.*)$/gm,'<h3>$1</h3>').replace(/^# (.*)$/gm,'<h2>$1</h2>').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/^[-*] (.*)$/gm,'• $1').replace(/\n{2,}/g,'<br><br>').replace(/\n/g,'<br>')});return h}
+document.addEventListener('click',e=>{if(e.target.classList.contains('cp')){navigator.clipboard&&navigator.clipboard.writeText(e.target.nextElementSibling.textContent);e.target.textContent='copied'}});
+// ---- AI layer: Claude built-in when available, else your own API key
+let sample=null;
+(async()=>{try{if(window.claude&&claude.use)sample=await claude.use('sample')}catch(e){}status()})();
+function status(){const ok=sample||D.key;$('dot').className='dot'+(ok?'':' off');$('st').textContent=sample?'ONLINE · Claude built-in':D.key?'ONLINE · '+D.model:'OFFLINE · add API key in Stats';$('mode').textContent=sample?'Running inside Claude: no key needed.':'Running standalone: uses your API key.'}
+async function llm(msgs,system,onText){
+ if(sample){const m=msgs.map(x=>({...x}));m[0].content=(system?'[Instructions]\n'+system+'\n\n[Conversation]\n':'')+m[0].content;const r=await sample(m,{cache:false,onText:o=>onText&&onText(o.text)});return r.text}
+ if(!D.key)throw new Error('No AI connected. Open Stats and add your API key.');
+ const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':D.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:D.model,max_tokens:3000,system,messages:msgs,stream:true})});
+ if(!r.ok)throw new Error('API error '+r.status+': '+(await r.text()).slice(0,160));
+ const rd=r.body.getReader(),dec=new TextDecoder();let buf='',txt='';
+ for(;;){const{done,value}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});const ls=buf.split('\n');buf=ls.pop();for(const l of ls)if(l.startsWith('data: ')){try{const j=JSON.parse(l.slice(6));if(j.type=='content_block_delta'&&j.delta.text){txt+=j.delta.text;onText&&onText(txt)}}catch(e){}}}
+ return txt}
+async function js(prompt){const t=await llm([{role:'user',content:prompt+'\nReturn ONLY valid JSON, no code fences or commentary.'}],'You output strict JSON only.');const a=t.search(/[\[{]/),z=Math.max(t.lastIndexOf(']'),t.lastIndexOf('}'));return JSON.parse(t.slice(a,z+1))}
+let busy=false;async function run(btn,fn){if(busy)return;busy=true;const o=btn&&btn.textContent;if(btn)btn.disabled=true;try{await fn()}catch(e){alert(e.message||'Something went wrong')}finally{busy=false;if(btn)btn.disabled=false}}
+// ---- tabs & colours
+const TABS=[['chat','💬','Chat'],['course','🎓','Courses'],['cards','🃏','Cards'],['stats','📊','Stats']];
+function colours(){PAL[D.pal].forEach((c,i)=>$('nav').children[i].style.setProperty('--c',c))}
+TABS.forEach(([id,ic,n],i)=>{const b=document.createElement('button');b.innerHTML='<span>'+ic+'</span>'+n;b.onclick=()=>show(i);$('nav').appendChild(b)});
+function show(i){const c=PAL[D.pal][i];document.documentElement.style.setProperty('--a',c);TABS.forEach(([id],j)=>{$('p-'+id).classList.toggle('hid',j!=i);$('nav').children[j].classList.toggle('on',j==i)});if(i==1)rCourses();if(i==2)rCards();if(i==3)rStats();colours()}
+// ---- CHAT
+const PER=[['🎓 Tutor','You are a world-class AI tutor. Teach step by step, use simple examples and analogies, check understanding with a short question, and adapt to the learner.'],['🗣 Discuss','You are a thoughtful discussion partner. Explore ideas with the user, give balanced perspectives, ask good follow-up questions and challenge assumptions kindly.'],['💻 Coder','You are an expert software engineer and mentor. Give correct, complete, runnable code in fenced code blocks and explain it clearly.'],['✨ Creator','You are a creative partner who can write stories, plans, ideas, emails, and anything the user wants to make. Produce polished work.']];
+function rPers(){$('pers').innerHTML='';PER.forEach(([n],i)=>{const b=document.createElement('button');b.textContent=n;b.className=D.persona==i?'on':'';b.onclick=()=>{D.persona=i;save();rPers()};$('pers').appendChild(b)})}
+function rLog(){$('log').innerHTML=D.chat.length?D.chat.map(m=>'<div class="msg '+(m.role=='user'?'u':'ai')+'">'+(m.role=='user'?esc(m.content):md(m.content))+'</div>').join(''):'<div class="mu" style="text-align:center;margin:30px 0">SYSTEM READY. Ask anything or pick a mode above.</div>'}
+function speak(t){if(!D.voice||!window.speechSynthesis)return;speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(t.replace(/```[\s\S]*?```/g,' code block ').replace(/[*#`]/g,'')))}
+async function ask(text){D.chat.push({role:'user',content:text});rLog();const el=document.createElement('div');el.className='msg ai';el.textContent='…';$('log').appendChild(el);el.scrollIntoView({block:'end'});
+ const h=D.chat.slice(-12);const r=await llm(h[0].role=='user'?h:h.slice(1),PER[D.persona][1],t=>{el.innerHTML=md(t)});D.chat.push({role:'assistant',content:r});D.chat=D.chat.slice(-40);xp(2);rLog();speak(r)}
+$('send').onclick=()=>{const v=$('inp').value.trim();if(!v)return;$('inp').value='';run($('send'),()=>ask(v)).then(()=>{if(D.chat.length&&D.chat[D.chat.length-1].role=='user'){D.chat.pop();save();rLog()}})};
+$('clr').onclick=()=>{D.chat=[];save();rLog()};
+$('spk').onclick=()=>{D.voice=D.voice?0:1;$('spk').textContent=D.voice?'🔊':'🔇';save();if(!D.voice&&window.speechSynthesis)speechSynthesis.cancel()};
+$('mic').onclick=()=>{const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R)return alert('Voice input isn’t supported in this browser.');const r=new R();r.onresult=e=>{$('inp').value+=e.results[0][0].transcript};r.start()};
+// ---- COURSES
+let cur=null,lastLesson='';
+function rCourses(){const L=$('cl-list');L.innerHTML='';D.courses.forEach((c,ci)=>{const all=c.mods.flatMap(m=>m.ls),dn=all.filter(l=>l.d).length,p=all.length?Math.round(dn/all.length*100):0;
+ const d=document.createElement('div');d.className='card';d.innerHTML='<b>'+esc(c.title)+'</b> <span class="mu">'+esc(c.level)+' · '+p+'%</span><div class="bar"><i style="width:'+p+'%"></i></div>';
+ c.mods.forEach((m,mi)=>{const h=document.createElement('div');h.innerHTML='<h4>'+(mi+1)+'. '+esc(m.t)+'</h4><div class="mu">'+esc(m.g||'')+'</div>';d.appendChild(h);m.ls.forEach((l,li)=>{const e=document.createElement('div');e.className='ls'+(l.d?' d':'');e.textContent=(l.d?'✅ ':'▶ ')+l.t;e.onclick=()=>openLesson(ci,mi,li);d.appendChild(e)})});L.appendChild(d)})}
+$('cb').onclick=()=>{const t=$('ct').value.trim();if(!t)return;run($('cb'),async()=>{const j=await js('Design a structured course on "'+t+'" for '+$('cl').value+' learners. JSON: {"title":string,"modules":[{"title":string,"goal":string,"lessons":[string,string,string]}]} with 4 modules.');D.courses.unshift({title:j.title||t,level:$('cl').value,mods:j.modules.map(m=>({t:m.title,g:m.goal,ls:m.lessons.map(x=>({t:x,d:0}))}))});xp(20);save();rCourses()})};
+function openLesson(c,m,l){cur={c,m,l};const C=D.courses[c],M=C.mods[m],L=M.ls[l];$('lcard').classList.remove('hid');$('lout').innerHTML='<span class="mu">Teaching…</span>';$('lcard').scrollIntoView();
+ run(null,async()=>{lastLesson=await llm([{role:'user',content:'Teach the lesson "'+L.t+'" (module "'+M.t+'" of the course "'+C.title+'", '+C.level+'). Explain clearly with examples, then give a short practice exercise.'}],PER[0][1],t=>{$('lout').innerHTML=md(t)});$('lout').innerHTML=md(lastLesson)})}
+$('ldone').onclick=()=>{if(!cur)return;const L=D.courses[cur.c].mods[cur.m].ls[cur.l];if(!L.d){L.d=1;xp(25)}save();rCourses()};
+$('lcards').onclick=()=>run($('lcards'),async()=>{if(!lastLesson)return;const L=D.courses[cur.c].mods[cur.m].ls[cur.l],j=await js('Make 8 flashcards from this lesson: '+lastLesson.slice(0,3000)+'\nJSON: [{"f":front,"b":back}]');addCards(j,D.courses[cur.c].title);alert(j.length+' cards added to your deck.')});
+$('ldisc').onclick=()=>{const L=D.courses[cur.c].mods[cur.m].ls[cur.l];D.persona=1;save();rPers();show(0);$('inp').value='Let’s discuss: '+L.t+'. Challenge my understanding.'};
+// ---- CARDS (SM-2 spaced repetition)
+function addCards(a,deck){a.forEach(x=>D.cards.push({id:Date.now()+Math.random(),deck:deck||'General',f:x.f,b:x.b,ef:2.5,int:0,rep:0,due:0}));save()}
+const due=()=>D.cards.filter(c=>c.due<=Date.now());
+function rCards(){const ds={};D.cards.forEach(c=>{ds[c.deck]=ds[c.deck]||[0,0];ds[c.deck][0]++;if(c.due<=Date.now())ds[c.deck][1]++});$('decks').innerHTML=Object.keys(ds).length?Object.entries(ds).map(([n,v])=>'• <b>'+esc(n)+'</b>: '+v[0]+' cards, '+v[1]+' due').join('<br>'):'No cards yet. Generate or add some below.'}
+let q=[],qc=null;
+$('rvAll').onclick=()=>{q=due();if(!q.length)return alert('Nothing due. Great job!');$('rv').classList.remove('hid');nextC()};
+function nextC(){if(!q.length){$('rv').classList.add('hid');rCards();return}qc=q.shift();$('rvn').textContent=q.length+1+' left · '+qc.deck;$('rvf').textContent=qc.f;$('rvb').innerHTML='';const s=document.createElement('button');s.className='b f';s.textContent='Show answer';s.onclick=()=>{$('rvf').innerHTML=esc(qc.f)+'<br><br><b style="color:var(--a)">'+esc(qc.b)+'</b>';$('rvb').innerHTML='';[['Again',0],['Hard',3],['Good',4],['Easy',5]].forEach(([n,g])=>{const b=document.createElement('button');b.className='b';b.textContent=n;b.onclick=()=>grade(g);$('rvb').appendChild(b)})};$('rvb').appendChild(s)}
+function grade(g){const c=qc;if(g<3){c.rep=0;c.int=0;c.due=Date.now()+6e5;q.push(c)}else{c.rep++;c.int=c.rep==1?1:c.rep==2?(g==3?2:3):Math.round(c.int*c.ef*(g==3?.8:g==5?1.3:1));c.ef=Math.max(1.3,c.ef+.1-(5-g)*(.08+(5-g)*.02));c.due=Date.now()+c.int*864e5}xp(1);save();nextC()}
+$('gen').onclick=()=>{const t=$('gt').value.trim();if(!t)return;run($('gen'),async()=>{const j=await js('Create 8 high-quality flashcards from this topic or text: '+t+'\nJSON: [{"f":front question,"b":concise answer}]');addCards(j,$('gd').value.trim()||'General');xp(5);rCards()})};
+$('madd').onclick=()=>{if(!$('mf').value||!$('mb').value)return;addCards([{f:$('mf').value,b:$('mb').value}],$('gd').value.trim()||'General');$('mf').value=$('mb').value='';rCards()};
+// ---- STATS
+function rStats(){$('s1').textContent=Math.floor(D.xp/100)+1;$('s2').textContent=D.streak;$('s3').textContent=D.xp;$('s4').textContent=due().length;$('s5').textContent=D.cards.length;$('s6').textContent=D.courses.flatMap(c=>c.mods.flatMap(m=>m.ls)).filter(l=>l.d).length;$('key').value=D.key;$('mod').value=D.model;status()}
+$('ks').onclick=()=>{D.key=$('key').value.trim();D.model=$('mod').value.trim()||'claude-sonnet-5-5';save();status();alert('Saved.')};
+$('pal').onclick=()=>{D.pal=(D.pal+1)%PAL.length;save();show(3)};
+$('wipe').onclick=()=>{if(confirm('Erase all data on this device?')){localStorage.removeItem('sysmind');location.reload()}};
+$('spk').textContent=D.voice?'🔊':'🔇';rPers();rLog();show(0);status();
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script></body></html>
